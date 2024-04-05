@@ -18,9 +18,23 @@ O sistema fará um scan da credencial do participante para permitir a entrada no
 
 - [x] O check-in no evento será realizado através de um QRCode;
 
+## Rodar aplicação
+*instale as dependências
+```sh
+npm install
+```
+* faça o migrate no banco
+```sh
+npm run db:migrate
+```
+* roda a aplicação
+```sh
+npm run dev
+```
+
 ## Documentação da API (Swagger)
 
-Para documentação da API, acesse o link: https://localhost:3333/docs
+Para documentação da API, rode a aplicação e acesse o link: https://localhost:3333/docs
 
 ## Banco de dados
 
