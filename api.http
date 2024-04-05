@@ -1,0 +1,35 @@
+POST http://localhost:3333/events
+Content-Type: application/json
+
+{
+    "title": "Evento musical",
+    "details": "um evento para quem é apaixonado por musical",
+    "maximumAttendees": 1
+}
+
+
+###
+
+POST http://localhost:3333/events/47a9f6e1-a3a6-464d-b05e-65058654fdec/attendees
+Content-Type: application/json
+
+{
+    "name": "Fabiola Nascimento",
+    "email": "fabiola7@email.com"
+}
+
+###
+
+GET http://localhost:3333/events/aad3b10b-0038-4d57-b0d3-486ca9707c92
+
+###
+
+GET http://localhost:3333/attendees/0X-0qxj/badge
+
+###
+
+GET http://localhost:3333/attendees/6/check-in
+
+###
+
+GET http://localhost:3333/events/aad3b10b-0038-4d57-b0d3-486ca9707c92/attendees
