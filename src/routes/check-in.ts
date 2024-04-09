@@ -7,12 +7,12 @@ import { badRequest } from "./_errors/bad-request";
 export async function checkIn(app: FastifyInstance){
     app
     .withTypeProvider<ZodTypeProvider>()
-    .get('/attendees/:attendeeId/check-in', {
+    .get('/attendees/:code/check-in', {
         schema: {
             summary: 'check-in an attendee',
             tags: ['check-in'],
             params: z.object({
-                attendeeId: z.coerce.number().int()
+                code: z.string()
             }),
             response: {
                 201: z.null()
@@ -20,11 +20,21 @@ export async function checkIn(app: FastifyInstance){
         }
     },
     async (request, reply) => {
-        const { attendeeId } = request.params;
+        const { code } = request.params;
+
+        const attendee = await prisma.attendee.findUnique({
+            where: {
+                code
+            }
+        })
+
+        if(attendee === null) {
+            throw new badRequest('Participante não encontrado')
+        }
 
         const attendeeCheckIn = await prisma.checkIn.findUnique({
             where: {
-                attendeeId
+                attendeeId: attendee.id
             }
         })
 
@@ -34,7 +44,7 @@ export async function checkIn(app: FastifyInstance){
 
         await prisma.checkIn.create({
             data: {
-                attendeeId
+                attendeeId: attendee.id
             }
         })
 

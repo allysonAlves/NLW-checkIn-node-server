@@ -23,12 +23,14 @@ export async function getEventAttendees(app: FastifyInstance){
                     attendees: z.array(
                         z.object({
                             id: z.number(),
+                            code: z.string(),
                             name: z.string(),
                             email: z.string().email(),
                             createdAt: z.date(),
                             checkedInAt: z.date().nullish()
                         })
-                    )
+                    ),
+                    total: z.number().int()
                 })
             }
         }
@@ -36,9 +38,21 @@ export async function getEventAttendees(app: FastifyInstance){
         const { eventId } = request.params;
         const  { pageIndex, query } = request.query;
 
+        const total = await prisma.attendee.count({
+            where: query ? {
+                eventId,
+                name: {
+                    contains: query
+                }
+            } : {
+                eventId,                
+            },
+        })
+
         const attendees = await prisma.attendee.findMany({
             select: {
                 id: true,
+                code: true,
                 name: true,
                 email: true,
                 createdAt: true,
@@ -47,18 +61,17 @@ export async function getEventAttendees(app: FastifyInstance){
                         createdAt: true,
                     }
                 }
-            },
+            },            
             where: query ? {
                 eventId,
                 name: {
                     contains: query
                 }
             } : {
-                eventId,
-                
+                eventId,                
             },
             take: 10,
-            skip: pageIndex,
+            skip: pageIndex * 10,
             orderBy: {
                 createdAt: 'desc'
             }
@@ -67,11 +80,13 @@ export async function getEventAttendees(app: FastifyInstance){
         return  reply.send({ 
             attendees: attendees.map(attendee => ({
                 id: attendee.id,
+                code: attendee.code,
                 name: attendee.name,
                 email: attendee.email,
                 createdAt: attendee.createdAt,
-                checkedInAt: attendee.checkIn?.createdAt
-            }))
+                checkedInAt: attendee.checkIn?.createdAt,
+            })),
+            total
          })
     })
 
